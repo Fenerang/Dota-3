@@ -13,8 +13,13 @@ let arrPicPlayer=[];
     arrPicPlayer['left']=picPlayerLeft;
     arrPicPlayer['right']=picPlayerRight;
 
-let picEnemy = new Image();
-    picEnemy.src = "./pic/PudgeR.png";
+let picEnemyRight = new Image();
+    picEnemyRight.src = "./pic/PudgeL.png";
+    picEnemyLeft = new Image();
+    picEnemyLeft.src = "./pic/PudgeL.png";
+let arrPicEnemy=[];
+    arrPicEnemy['left']=picEnemyLeft;
+    arrPicEnemy['right']=picEnemyRight;
 
 ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
@@ -32,14 +37,38 @@ function resizeImg(img, percent){
     }
     
 }
-
+let startGame = false;
 let xPlayer = 50, yPlayer = 600, speedPlayer= 5, navPlayer = 'right',
-    xEnemy = 800, yEnemy = 650
+    xEnemy = 800, yEnemy = 650,speedEnemy = 5, navEnemy = 'left'
 
 function draw(){
     let picPlayer = arrPicPlayer[navPlayer]
+    let picEnemy = arrPicEnemy[navEnemy]
     resizeImg(picPlayer,8)
     resizeImg(picEnemy,8)
+
+    function startPosition(){
+        xPlayer = window.innerWidth*0.05;
+        yPlayer = window.innerHeight*0.7;
+    }
+
+    function moveEnemy(){
+        let timerMoveEnemy = setTimeout(()=>{
+            if(xEnemy>(xPlayer+picPlayer.width)){
+                xEnemy --;
+                navEnemy='left'
+            } else if((xEnemy+picEnemy.width)<xPlayer){
+                xEnemy++;
+                navEnemy='right'
+            }
+            draw();
+            moveEnemy();
+        },speedEnemy);
+    }
+    if(startGame){
+        moveEnemy();
+        startGame=false;
+    }
     ctx.drawImage(picBackground, 0, 0, window.innerWidth, window.innerHeight)
     ctx.drawImage(picPlayer, xPlayer, yPlayer, picPlayer.width, picPlayer.height)
     ctx.drawImage(picEnemy, xEnemy, yEnemy, picEnemy.width, picEnemy.height)
@@ -49,7 +78,8 @@ function draw(){
 picBackground.onload = draw;
 picPlayerLeft.onload = draw;
 picPlayerRight.onload= draw;
-picEnemy.onload = draw;
+picEnemyLeft.onload = draw;
+picEnemyRight.onload = draw;
 
 document.addEventListener('keydown', (event)=>{
     let KeyPressed = event.code;
@@ -72,6 +102,9 @@ document.addEventListener('keydown', (event)=>{
         yPlayer+=speedPlayer;
         soundStep.play();    
         break;
+        case 'Enter':
+            startGame=true;
+            break;
     }
     draw();
 });
