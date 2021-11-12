@@ -57,8 +57,10 @@ function resizeImg(img, percent){
 }
 let startGame = false;
 let xPlayer = 50, yPlayer = 600, speedPlayer= 10, navPlayer = 'right',
-    xEnemy = 800, yEnemy = 650,speedEnemy = 10, navEnemy = 'left',boardPicPlayer=0,boardPicEnemy=0;
-    countLife=5;
+    xEnemy = 800, yEnemy = 650,speedEnemy = 10, navEnemy = 'left',boardPicPlayer=0,boardPicEnemy=0,
+    countLife=5,
+    countRuna=0,
+    boardPicRuna;
 
 function boardPic(pic, x, y){
     let picRight, picBottom;
@@ -66,6 +68,16 @@ function boardPic(pic, x, y){
     picBottom = y + pic.height;
     return [picRight, picBottom];        
     }
+
+function checkCollision(x1,x2,y1,y2,r1,r2,b1,b2){
+    if(r1>x2 && r2>x1 && b1>y2 && b2>y1){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 function draw(){
     let picPlayer = arrPicPlayer[navPlayer]
     let picEnemy = arrPicEnemy[navEnemy]
@@ -77,6 +89,7 @@ function draw(){
    
      boardPicEnemy = boardPic(picEnemy, xEnemy, yEnemy);
 
+     boardPicRuna = boardPic(picRuna,positionRuna[0],positionRuna[1])
 
     function startPosition(){
         xPlayer = window.innerWidth*0.05;
@@ -87,7 +100,7 @@ function draw(){
 
     function moveEnemy(){
         function collisionEnemy(){
-            if(boardPicPlayer[0]>xEnemy && xPlayer<boardPicEnemy[0] && yPlayer<boardPicEnemy[1] && yEnemy<boardPicPlayer[1]){
+            if(checkCollision(xPlayer,xEnemy,yPlayer,yEnemy,boardPicPlayer[0],boardPicEnemy[0],boardPicPlayer[1],boardPicEnemy[1])){
                 countLife--;
                 if (countLife<=0){
                     let NewGame=confirm('GG WP:(\n Начать заново?)')
@@ -131,6 +144,19 @@ function draw(){
     ctx.drawImage(picLife, xLife, yLife, picLife.width, picLife.height)
     ctx.drawImage(picRuna, positionRuna[0], positionRuna[1], picRuna.width, picRuna.height)
     }
+    function collisionRuna(){
+        if(checkCollision(xPlayer,positionRuna[0],yPlayer,positionRuna[1],boardPicPlayer[0],boardPicRuna[0],boardPicPlayer[1],boardPicRuna[1])){
+            countRuna++;
+            newPositionRuna();
+        }
+    }
+    collisionRuna();
+    function printText(text,x,y,size,color){
+        ctx.font = size+"px Curlz MT";
+        ctx.fillStyle = color;
+        ctx.fillText(text,x,y)
+    }
+    printText("Count ="+countRuna,innerWidth*0.05,innerHeight*0.1,innerHeight*0.03,"#ccccff")
 }
 
 picBackground.onload = draw;
